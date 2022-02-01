@@ -3,6 +3,10 @@ using System.Runtime.CompilerServices;
 
 namespace IzaBlockchain.Net;
 
+/// <summary>
+/// Implementation of list based on <see cref="NativeArray{T}"/>
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
 {
     public T this[int index]
@@ -10,6 +14,11 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
         get => array[index];
         set => array[index] = value;
     }
+    /// <summary>
+    /// Get's an reference to an item on specified index
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
     public ref T FromIndex(int index)
     {
         return ref array.Ref(index);
@@ -21,10 +30,19 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
 
     bool readOnly;
 
+    /// <summary>
+    /// Current count of itens on this list
+    /// </summary>
     public int Count => size;
 
+    /// <summary>
+    /// Is this list a read-only list?
+    /// </summary>
     public bool IsReadOnly => readOnly;
 
+    /// <summary>
+    /// Releases allocated memory from this list
+    /// </summary>
     public void Dispose() => array.Dispose();
 
     #region Public

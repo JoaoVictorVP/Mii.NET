@@ -4,6 +4,41 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <RepositoryUrl>https://github.com/JoaoVictorVP/Mii.NET</RepositoryUrl>
+
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+
+    <SignAssembly>False</SignAssembly>
+
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+
+    <Description>API to make easy use of Span&lt;T&gt; and new NativeMemory classes with intelligent wrappers like:
+ * NativeArray&lt;T&gt;
+ * NativeList&lt;T&gt;
+ * SpanStream&lt;T&gt;
+ * SmartPointer
+ * Ptr&lt;T&gt;
+And much more</Description>
+
+    <PackageIcon>Cute Original Rika.png</PackageIcon>
+
+    <AssemblyVersion></AssemblyVersion>
+
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\Pictures\Cute Original Rika.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
 
 </Project>

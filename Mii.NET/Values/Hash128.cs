@@ -6,6 +6,9 @@ using System.Security.Cryptography;
 
 namespace Mii.NET;
 
+/// <summary>
+/// Represents a 128-bits hash
+/// </summary>
 [JsonConverter(typeof(Hash128Json_Converter))]
 public struct Hash128 : IHashValue<Hash128>
 {
@@ -20,6 +23,7 @@ public struct Hash128 : IHashValue<Hash128>
     }
     public int Size => 16;
     ulong A, B;
+
     public void GetBytes(Span<byte> bytes)
     {
         BinaryPrimitives.WriteUInt64LittleEndian(bytes[..8], A);
@@ -35,12 +39,23 @@ public struct Hash128 : IHashValue<Hash128>
     public static bool operator !=(Hash128 left, Hash128 right) => !(left == right);
 
     #region Public
+    /// <summary>
+    /// Derivate a <see cref="Hash128"/> from a span of bytes
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
     public static Hash128 From(Span<byte> data)
     {
         Span<byte> hash = stackalloc byte[16];
         SHA1.HashData(data);
         return new Hash128(hash);
     }
+    /// <summary>
+    /// Derivate a <see cref="Hash128"/> from a span of bytes using a key in HMAC
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
     public static Hash128 From(Span<byte> data, Span<byte> key)
     {
         Span<byte> hash = stackalloc byte[16];
@@ -49,12 +64,21 @@ public struct Hash128 : IHashValue<Hash128>
     }
     #endregion
 
+    /// <summary>
+    /// Parse this <see cref="Hash128"/> from hext string text
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
     public static Hash128 Parse(string text)
     {
         Span<byte> bytes = stackalloc byte[sizeof(ulong) * 2];
         MiiUtils.FromHexString(text, bytes);
         return new Hash128(bytes);
     }
+    /// <summary>
+    /// Converts this <see cref="Hash128"/> into a hex string text
+    /// </summary>
+    /// <returns></returns>
     public override string ToString()
     {
         Span<byte> bytes = stackalloc byte[sizeof(ulong) * 2];

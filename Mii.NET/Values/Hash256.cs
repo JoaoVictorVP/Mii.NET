@@ -6,6 +6,10 @@ using System.Security.Cryptography;
 
 namespace Mii.NET;
 
+/// <summary>
+/// Represents a 256-bits hash
+/// </summary>
+
 [JsonConverter(typeof(Hash256Json_Converter))]
 public unsafe struct Hash256 : IHashValue<Hash256>
 {
@@ -36,12 +40,23 @@ public unsafe struct Hash256 : IHashValue<Hash256>
     public static bool operator !=(Hash256 left, Hash256 right) => !(left == right);
 
     #region Public
+    /// <summary>
+    /// Derivate a <see cref="Hash256"/> from a span of bytes
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
     public static Hash256 From(Span<byte> data)
     {
         Span<byte> hash = stackalloc byte[32];
         SHA256.HashData(data);
         return new Hash256(hash);
     }
+    /// <summary>
+    /// Derivate a <see cref="Hash256"/> from a span of bytes using a key in HMAC
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
     public static Hash256 From(Span<byte> data, Span<byte> key)
     {
         Span<byte> hash = stackalloc byte[32];
@@ -50,13 +65,21 @@ public unsafe struct Hash256 : IHashValue<Hash256>
     }
     #endregion
 
-
+    /// <summary>
+    /// Parse this <see cref="Hash256"/> from hext string text
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
     public static Hash256 Parse(string text)
     {
         Span<byte> bytes = stackalloc byte[sizeof(ulong) * 4];
         MiiUtils.FromHexString(text, bytes);
         return new Hash256(bytes);
     }
+    /// <summary>
+    /// Converts this <see cref="Hash256"/> into a hex string text
+    /// </summary>
+    /// <returns></returns>
     public override string ToString()
     {
         Span<byte> bytes = stackalloc byte[sizeof(ulong) * 4];

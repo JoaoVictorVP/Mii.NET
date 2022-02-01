@@ -17,6 +17,13 @@ public static class MiiUtils
         else
             return new NativeArray<byte>(size).SmartClean();
     }
+    /// <summary>
+    /// Populate a span of bytes from an hex string without allocating memory
+    /// </summary>
+    /// <param name="chars">The span of chars to be read</param>
+    /// <param name="bytes">The destination span of bytes</param>
+    /// <returns></returns>
+    /// <exception cref="FormatException"></exception>
     public static bool FromHexString(ReadOnlySpan<char> chars, Span<byte> bytes)
     {
         if (chars.Length == 0)

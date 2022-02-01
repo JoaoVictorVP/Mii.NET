@@ -2,13 +2,28 @@
 
 namespace IzaBlockchain.Net;
 
+/// <summary>
+/// Native array based on new .NET 6 NativeMemory class
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public unsafe struct NativeArray<T> : IDisposable where T : unmanaged
 {
+    /// <summary>
+    /// Verify if this array points to a null pointer
+    /// </summary>
     public bool IsNull => ptr == null;
 
+    /// <summary>
+    /// The specified size of this array
+    /// </summary>
     public readonly int Size;
     T* ptr;
 
+    /// <summary>
+    /// Get's a reference from specific index of this array
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
     public ref T Ref(int index) => ref ptr[index];
 
     public T this[int index]
@@ -17,10 +32,21 @@ public unsafe struct NativeArray<T> : IDisposable where T : unmanaged
         set => ptr[index] = value;
     }
 
+    /// <summary>
+    /// Releases allocated memory of this array
+    /// </summary>
     public void Dispose() => NativeMemory.Free(ptr);
 
+    /// <summary>
+    /// Returns an smart pointer from this array that will dispose internal pointer when needed
+    /// </summary>
+    /// <returns></returns>
     public SmartPointer CreateSmartPointer() => new SmartPointer(ptr);
 
+    /// <summary>
+    /// Create an smart pointer internally on this array and make's this array be disposed
+    /// </summary>
+    /// <returns></returns>
     public NativeArray<T> SmartClean()
     {
         _ = new SmartPointer(ptr);

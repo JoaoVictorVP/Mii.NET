@@ -7,6 +7,9 @@ namespace IzaBlockchain.Net;
 /// </summary>
 public unsafe class SmartPointer : IDisposable
 {
+    /// <summary>
+    /// The pointer handled by this smart pointer
+    /// </summary>
     public readonly void* Ptr;
     public void Dispose()
     {

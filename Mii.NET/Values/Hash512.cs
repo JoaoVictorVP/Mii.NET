@@ -6,6 +6,9 @@ using System.Security.Cryptography;
 
 namespace Mii.NET;
 
+/// <summary>
+/// Represents a 512-bits hash
+/// </summary>
 [JsonConverter(typeof(Hash512Json_Converter))]
 public unsafe struct Hash512 : IHashValue<Hash512>
 {
@@ -42,12 +45,23 @@ public unsafe struct Hash512 : IHashValue<Hash512>
     public static bool operator !=(Hash512 left, Hash512 right) => !(left == right);
 
     #region Public
+    /// <summary>
+    /// Derivate a <see cref="Hash512"/> from a span of bytes
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
     public static Hash512 From(Span<byte> data)
     {
         Span<byte> hash = stackalloc byte[32];
         SHA512.HashData(data);
         return new Hash512(hash);
     }
+    /// <summary>
+    /// Derivate a <see cref="Hash512"/> from a span of bytes using a key in HMAC
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
     public static Hash512 From(Span<byte> data, Span<byte> key)
     {
         Span<byte> hash = stackalloc byte[32];
@@ -56,13 +70,21 @@ public unsafe struct Hash512 : IHashValue<Hash512>
     }
     #endregion
 
-
+    /// <summary>
+    /// Parse this <see cref="Hash512"/> from hext string text
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
     public static Hash512 Parse(string text)
     {
         Span<byte> bytes = stackalloc byte[sizeof(ulong) * 8];
         MiiUtils.FromHexString(text, bytes);
         return new Hash512(bytes);
     }
+    /// <summary>
+    /// Converts this <see cref="Hash512"/> into a hex string text
+    /// </summary>
+    /// <returns></returns>
     public override string ToString()
     {
         Span<byte> bytes = stackalloc byte[sizeof(ulong) * 8];
