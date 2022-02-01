@@ -1,0 +1,44 @@
+﻿using System.Runtime.CompilerServices;
+
+namespace Mii.NET;
+
+/// <summary>
+/// Represents an rational number composed with two Int64 as components (natural; rational)
+/// </summary>
+public struct Number : IComparable<Number>, IEquatable<Number>
+{
+    long natural;
+    ulong rational;
+
+    public int CompareTo(Number other)
+    {
+        if (Equals(other)) return 0;
+
+        if (natural > other.natural || natural == other.natural && rational > other.rational) return 1;
+        
+        return -1;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    void add(Number other)
+    {
+
+    }
+
+
+    public bool Equals(Number other) => natural == other.natural && rational == other.rational;
+
+    public static bool operator ==(Number l, Number r) => l.Equals(r);
+    public static bool operator !=(Number l, Number r) => !(l == r);
+
+    public static Number operator +(Number l, Number r)
+    {
+
+    }
+
+
+    public override string ToString()
+    {
+        return $"{natural}.{rational}";
+    }
+}
