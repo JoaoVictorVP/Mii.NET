@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 
 namespace IzaBlockchain.Net;
@@ -45,13 +46,103 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
     /// </summary>
     public void Dispose() => array.Dispose();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    void add(T item, bool checkBounds)
+    {
+        int index = size;
+
+        size++;
+        if (checkBounds)
+            this.checkBounds();
+
+        array[index] = item;
+    }
+
     #region Public
 
-    public void Add(T item)
+    /// <summary>
+    /// Verify if a <typeparamref name="T"/> item matching <paramref name="predicate"/> exist on this <see cref="NativeList{T}"/>
+    /// </summary>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public bool Exists(delegate*<int, T, bool> predicate)
     {
-        array[size] = item;
-        size++;
+        for (int i = 0; i < size; i++)
+            if (predicate(i, array[i]))
+                return true;
+        return false;
     }
+
+    /// <summary>
+    /// Find a <typeparamref name="T"/> item matching <paramref name="predicate"/>, return default if it doesn't exist
+    /// </summary>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public T Find(delegate*<int, T, bool> predicate)
+    {
+        for (int i = 0; i < size; i++)
+        {
+            ref T item = ref array.Ref(i);
+            if (predicate(i, item))
+                return item;
+        }
+        return default;
+    }
+
+    /// <summary>
+    /// Iterates through all <typeparamref name="T"/> items on this <see cref="NativeList{T}"/>
+    /// </summary>
+    /// <param name="iterator"></param>
+    public void ForEach(delegate*<int, T, void> iterator)
+    {
+        for (int i = 0; i < size; i++)
+            iterator(i, array[i]);
+    }
+
+    /// <summary>
+    /// Add a new <paramref name="item"/> to this <see cref="NativeList{T}"/>
+    /// </summary>
+    /// <param name="item"></param>
+    public void Add(T item) => add(item, true);
+    /// <summary>
+    /// Add a range of <paramref name="items"/> to this <see cref="NativeList{T}"/>
+    /// </summary>
+    /// <param name="items"></param>
+    public void AddRange(IList<T> items)
+    {
+        int count = items.Count;
+        int nSize = size += count;
+        if (nSize > capacity)
+        {
+            capacity += nSize - capacity;
+            newOrExtendArrayForCapacity();
+        }
+        for (int i = 0; i < count; i++)
+            add(items[i], false);
+    }
+
+    /// <summary>
+    /// Remove all items that matches <paramref name="predicate"/>
+    /// </summary>
+    /// <param name="predicate"></param>
+    public void RemoveAll(delegate*<int, T, bool> predicate)
+    {
+        using NativeList<T> toRemove = new NativeList<T>(32);
+        for(int i = 0; i < size; i++)
+        {
+            ref T item = ref array.Ref(i);
+            if (predicate(i, item))
+                toRemove.Add(item);
+        }
+
+        for (int i = 0; i < toRemove.size; i++)
+            Remove(toRemove[i]);
+    }
+    /// <summary>
+    /// Remove a <paramref name="item"/> from this <see cref="NativeList{T}"/>
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
     public bool Remove(T item)
     {
         int index = IndexOf(item);
@@ -60,6 +151,11 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
         RemoveAt(index);
         return true;
     }
+    /// <summary>
+    /// Remove a item from this <see cref="NativeList{T}"/> at <paramref name="index"/>
+    /// </summary>
+    /// <param name="index"></param>
+    /// <exception cref="IndexOutOfRangeException"></exception>
     public void RemoveAt(int index)
     {
         if (index < 0 || index >= size)
@@ -74,6 +170,11 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
         }
         size--;
     }
+    /// <summary>
+    /// Get the index of <paramref name="item"/> in this <see cref="NativeList{T}"/>
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public int IndexOf(T item)
     {
@@ -91,7 +192,7 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
     {
         if(size >= capacity)
         {
-            capacity *= 2;
+            capacity = size * 2;
             newOrExtendArrayForCapacity();
         }
     }
@@ -109,11 +210,40 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
         array = arr;
     }
 
+    /// <summary>
+    /// Insert a <paramref name="item"/> on this <see cref="NativeList{T}"/> at <paramref name="index"/>
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="item"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public void Insert(int index, T item)
     {
-        throw new NotImplementedException();
+        if(index == size)
+        {
+            Add(item);
+            return;
+        }
+
+        if(index < 0 || index >= size)
+            throw new ArgumentOutOfRangeException("index", index, "Can't insert after size or before 0");
+
+        size++;
+        checkBounds();
+
+        using var oarr = array.Slice(index, size - (index + 1));
+
+        /*for(int i = index + 1; i < capacity; i++)
+        {
+            array[i] = oarr[i - index];
+        }*/
+        for (int i = 0; i < oarr.Length; i++)
+            array[(index + 1) + i] = oarr[i];
+        array[index] = item;
     }
 
+    /// <summary>
+    /// Clear the items of this <see cref="NativeList{T}"/>
+    /// </summary>
     public void Clear()
     {
         for (int i = 0; i < size; i++)
@@ -121,6 +251,11 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
         size = 0;
     }
 
+    /// <summary>
+    /// Check if this <see cref="NativeList{T}"/> contains <paramref name="item"/>
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns>Does this <see cref="NativeList{T}"/> contains <paramref name="item"/>?</returns>
     public bool Contains(T item)
     {
         int itemHash = item.GetHashCode();
@@ -130,6 +265,11 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
         return false;
     }
 
+    /// <summary>
+    /// Copy the contents of this <see cref="NativeList{T}"/> into <paramref name="array"/>, starting from <paramref name="arrayIndex"/>
+    /// </summary>
+    /// <param name="array"></param>
+    /// <param name="arrayIndex"></param>
     public void CopyTo(T[] array, int arrayIndex)
     {
         ((Span<T>)array).CopyTo(array);
@@ -147,6 +287,10 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
             yield return array[i];
     }
 
+    /// <summary>
+    /// Turns this <see cref="NativeList{T}"/> readonly
+    /// </summary>
+    /// <returns></returns>
     public NativeList<T> AsReadOnly()
     {
         var copy = this;
@@ -175,5 +319,17 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
         this.capacity = capacity;
         readOnly = false;
         newOrExtendArrayForCapacity();
+    }
+
+    /// <summary>
+    /// Get a string representation for this <see cref="NativeList{T}"/>
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        string ret = $"NativeList<{typeof(T).Name}> of size: {size},\n{{ ";
+        for (int i = 0; i < size; i++)
+            ret += $"{i}: [{array[i]}] ";
+        return ret + '}';
     }
 }

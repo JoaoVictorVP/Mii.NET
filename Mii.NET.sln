@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32113.165
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mii.NET", "Mii.NET\Mii.NET.csproj", "{ECEB62B2-BD3E-4FCA-84E8-B2698B38AEBD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mii.NET", "Mii.NET\Mii.NET.csproj", "{ECEB62B2-BD3E-4FCA-84E8-B2698B38AEBD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mii.NET.Testing", "Mii.NET.Testing\Mii.NET.Testing.csproj", "{2D273B48-4CC6-45B4-B072-0C956DFC60CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{ECEB62B2-BD3E-4FCA-84E8-B2698B38AEBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECEB62B2-BD3E-4FCA-84E8-B2698B38AEBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECEB62B2-BD3E-4FCA-84E8-B2698B38AEBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D273B48-4CC6-45B4-B072-0C956DFC60CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D273B48-4CC6-45B4-B072-0C956DFC60CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D273B48-4CC6-45B4-B072-0C956DFC60CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D273B48-4CC6-45B4-B072-0C956DFC60CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
