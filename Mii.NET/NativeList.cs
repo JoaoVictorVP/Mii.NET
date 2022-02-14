@@ -10,6 +10,12 @@ namespace IzaBlockchain.Net;
 /// <typeparam name="T"></typeparam>
 public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
 {
+    /// <summary>
+    /// Get the internal <see cref="NativeArray{T}"/> for this <see cref="NativeList{T}"/>
+    /// </summary>
+    /// <returns></returns>
+    public NativeArray<T> GetArray() => array;
+
     public T this[int index]
     {
         get => array[index];

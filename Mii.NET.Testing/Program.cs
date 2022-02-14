@@ -30,7 +30,7 @@ string nBaseString = baseMessage;
 //var nStrBuilder = new List<char>();
 StringBuilder nStrBuilder = new StringBuilder();
 sw.Start();
-for (int i = 0; i < iterations; i++)
+for (int i = 0; i < iterations * 3; i++)
     nStrBuilder.Append('A');
 //nlist.Add(nBaseString = nBaseString.ToUpper());
 //nlist.Add(i);
