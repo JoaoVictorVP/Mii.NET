@@ -11,7 +11,7 @@ public ref struct SpanStream
     SpanStack<byte> stack;
     bool reading;
 
-    public bool CanWrite => !reading && stack.Size > 0;
+    public bool CanWrite => !reading;
     public bool CanRead => reading && stack.Size > 0;
 
     /// <summary>

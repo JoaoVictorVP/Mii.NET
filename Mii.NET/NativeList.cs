@@ -308,6 +308,8 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
             yield return array[i];
     }
 
+    public static implicit operator Span<T> (NativeList<T> list) => list.array;
+
     /// <summary>
     /// Turns this <see cref="NativeList{T}"/> readonly
     /// </summary>

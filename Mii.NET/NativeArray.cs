@@ -133,8 +133,7 @@ public unsafe struct NativeArray<T> : IDisposable, IEnumerable<T> where T : unma
     /// Reallocs the memory of this <see cref="NativeArray{T}"/> into new size, returns a new larger sized array from this
     /// </summary>
     /// <param name="newSize"></param>
-    /// <param name="disposeSelf">Should this array dispose itself when creating the new version of it?</param>
-    public NativeArray<T> Realloc(int newSize, bool disposeSelf = true)
+    public NativeArray<T> Realloc(int newSize)
     {
         var nptr = NativeMemory.Realloc(ptr, (nuint)(newSize * sizeof(T)));
         return new NativeArray<T>((T*)nptr, newSize);

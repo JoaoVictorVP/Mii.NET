@@ -21,7 +21,7 @@ public unsafe ref struct SpanStack<T> where T : unmanaged
     {
         size += values.Length;
         if (size >= capacity)
-            IncreaseSpan();
+            IncreaseSpan(size);
         for (int i = Size - values.Length; i < values.Length; i++)
             Span[i] = values[i];
     }
@@ -29,7 +29,7 @@ public unsafe ref struct SpanStack<T> where T : unmanaged
     {
         size += length;
         if (size >= capacity)
-            IncreaseSpan();
+            IncreaseSpan(size);
         for (int i = size - length; i < length; i++)
             Span[i] = values[i];
     }
@@ -38,7 +38,7 @@ public unsafe ref struct SpanStack<T> where T : unmanaged
     {
         size++;
         if (size >= capacity)
-            IncreaseSpan();
+            IncreaseSpan(size);
         Span[Size - 1] = value;
     }
     public T Pop()
@@ -49,9 +49,9 @@ public unsafe ref struct SpanStack<T> where T : unmanaged
     }
     public T Peek() => Span[size - 1];
 
-    void IncreaseSpan()
+    void IncreaseSpan(int size)
     {
-        capacity *= 2;
+        capacity = size * 2;
         var nspan = GetSpan(capacity);
         Span.CopyTo(nspan);
 
@@ -69,7 +69,7 @@ public unsafe ref struct SpanStack<T> where T : unmanaged
     {
         capacity = size;
         Span = GetSpan(capacity);
-        this.size = size;
+        this.size = 0;
     }
 
     public void Dispose()
@@ -95,5 +95,16 @@ public unsafe ref struct SpanStack<T> where T : unmanaged
         Span = default;
 
         ptr = null;
+    }
+    public SpanStack(int capacity)
+    {
+        size = 0;
+        this.capacity = capacity;
+
+        Span = default;
+
+        ptr = null;
+
+        Span = GetSpan(capacity);
     }
 }
