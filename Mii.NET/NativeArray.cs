@@ -104,6 +104,11 @@ public unsafe struct NativeArray<T> : IDisposable, IEnumerable<T> where T : unma
         for (int i = 0; i < span.Length; i++)
             ptr[i] = span[i];
     }
+    NativeArray(T* ptr, int size)
+    {
+        Size = size;
+        this.ptr = ptr;
+    }
     /*public NativeArray(IEnumerable<T> enumerable)
     {
         Size = enumerable.Count();
@@ -122,6 +127,27 @@ public unsafe struct NativeArray<T> : IDisposable, IEnumerable<T> where T : unma
         for (int i = 0; i < Size; i++)
             ret += $"{i}: [{ptr[i]}] ";
         return ret + '}';
+    }
+
+    /// <summary>
+    /// Reallocs the memory of this <see cref="NativeArray{T}"/> into new size, returns a new larger sized array from this
+    /// </summary>
+    /// <param name="newSize"></param>
+    /// <param name="disposeSelf">Should this array dispose itself when creating the new version of it?</param>
+    public NativeArray<T> Realloc(int newSize, bool disposeSelf = true)
+    {
+        var nptr = NativeMemory.Realloc(ptr, (nuint)(newSize * sizeof(T)));
+        return new NativeArray<T>((T*)nptr, newSize);
+
+        /*var nptr = (T*)NativeMemory.Alloc((nuint)newSize, (nuint)sizeof(T));
+
+        for (int i = 0; i < Size; i++)
+            nptr[i] = ptr[i];
+
+        if (disposeSelf)
+            NativeMemory.Free(ptr);
+
+        return new NativeArray<T>(nptr, newSize);*/
     }
 
     public IEnumerator<T> GetEnumerator()

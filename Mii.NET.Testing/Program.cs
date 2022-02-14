@@ -1,21 +1,27 @@
 ﻿using IzaBlockchain.Net;
+using System.Diagnostics;
 
 Console.WriteLine("Testing Mii.NET");
 
-var list = new NativeList<int>() { 100, 300, 500 };
+var list = new NativeList<int>();
 
-Console.WriteLine("Original:\n" + list);
+const int iterations = 10_000_000;
 
-list.Insert(3, 900);
+Stopwatch sw = new Stopwatch();
+sw.Start();
+for (int i = 0; i < iterations; i++)
+    list.Add(i);
+sw.Stop();
 
-Console.WriteLine("Modified:\n" + list);
+Console.WriteLine("Elapsed Time: " + sw.Elapsed);
 
-Console.ReadKey(true);
+var nlist = new List<int>();
 
-unsafe void testForEach()
-{
-    static void iterate(int index, int item) => Console.WriteLine($"{item} at {index}");
+sw = new Stopwatch();
 
-    list.ForEach(&iterate);
-}
-testForEach();
+sw.Start();
+for (int i = 0; i < iterations; i++)
+    nlist.Add(i);
+sw.Stop();
+
+Console.WriteLine("Elapsed Time for normal lists: " + sw.Elapsed);

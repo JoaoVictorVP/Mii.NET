@@ -111,8 +111,20 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
     public void AddRange(IList<T> items)
     {
         int count = items.Count;
-        int nSize = size += count;
+        int nSize = size + count;
         if (nSize > capacity)
+        {
+            capacity += nSize - capacity;
+            newOrExtendArrayForCapacity();
+        }
+        for (int i = 0; i < count; i++)
+            add(items[i], false);
+    }
+    public void AddRange(Span<T> items)
+    {
+        int count = items.Length;
+        int nSize = size + count;
+        if(nSize > capacity)
         {
             capacity += nSize - capacity;
             newOrExtendArrayForCapacity();
@@ -199,7 +211,16 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
 
     void newOrExtendArrayForCapacity()
     {
-        var arr = new NativeArray<T>(capacity);
+        if (array.IsNull)
+            array = new NativeArray<T>(capacity);
+        else
+        {
+            if (capacity < array.Size)
+                throw new Exception("Can't bind lower capacity to a list");
+            array = array.Realloc(capacity);
+        }
+
+        /*var arr = new NativeArray<T>(capacity);
         if (!array.IsNull)
         {
             if (capacity < array.Size)
@@ -207,7 +228,7 @@ public unsafe struct NativeList<T> : IDisposable, IList<T> where T : unmanaged
             ((Span<T>)array).CopyTo(arr);
             array.Dispose();
         }
-        array = arr;
+        array = arr;*/
     }
 
     /// <summary>
